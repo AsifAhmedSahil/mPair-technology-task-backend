@@ -4,6 +4,7 @@ export interface TUser  {
     password:string;
     dateOfBirth:Date;
     gender:'male' | 'female'| 'others';
+    image:string;
     employeeId:string;
     position:string;
     

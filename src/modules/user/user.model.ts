@@ -27,6 +27,10 @@ const userModel = new Schema<TUser>({
         enum:["male",'female','others'],
         required:true
     },
+    image:{
+        type:String,
+        required:true
+    },
     employeeId:{
         type: String,
         
