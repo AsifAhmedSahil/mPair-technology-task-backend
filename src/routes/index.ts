@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { authRouter } from "../modules/auth/auth.route";
 
 
 
@@ -9,13 +10,13 @@ const router  = Router()
 const middleRoute = [
     {
         path:"/auth",
-        // route: authRouter
+        route: authRouter
     },
     
-    {
-        path:"/user",
-        // route: userRouter
-    },
+    // {
+    //     path:"/user",
+    //     route: userRouter
+    // },
     
 
 

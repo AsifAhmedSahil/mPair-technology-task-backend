@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 
+
+
+
+// import jwt from "jsonwebtoken";
 import { TUser } from "../user/user.interface";
 import { User } from "../user/user.model";
-
-import jwt from "jsonwebtoken";
 
 const signup = async (payload: TUser) => {
   // check user existance
@@ -13,7 +15,7 @@ const signup = async (payload: TUser) => {
     throw new Error("User Already Exists!");
   }
 
-  payload.role = "user";
+//   payload.role = "user";
 
   // console.log(payload)
   const result = await User.create(payload);
