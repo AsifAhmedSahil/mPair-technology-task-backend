@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { authRouter } from "../modules/auth/auth.route";
+import { accountHeadRouter } from "../modules/account-head/accountHead.route";
 
 
 
@@ -12,6 +13,10 @@ const middleRoute = [
         path:"/auth",
         route: authRouter
     },
+    {
+        path:"/accountHead",
+        route:accountHeadRouter
+    }
     
     // {
     //     path:"/user",
