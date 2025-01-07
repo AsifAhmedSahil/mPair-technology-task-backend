@@ -42,7 +42,27 @@ const getAccountController = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getTotalDebitCreditAndAmountForCurrentMonthController = catchAsync(
+  async (req: Request, res: Response) => {
+    const { employeeId } = req.params;
+
+    const totals =
+      await accountService.getTotalDebitCreditAndAmountForCurrentMonth(
+        employeeId
+      );
+
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message:
+        "Total debit, credit, and amount for the current month fetched successfully",
+      data: totals,
+    });
+  }
+);
+
 export const accountController = {
   addAccountController,
   getAccountController,
+  getTotalDebitCreditAndAmountForCurrentMonthController,
 };
