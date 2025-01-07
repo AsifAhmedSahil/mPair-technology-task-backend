@@ -61,8 +61,25 @@ const getTotalDebitCreditAndAmountForCurrentMonthController = catchAsync(
   }
 );
 
+const getYearlyDebitCreditDataController = catchAsync(async (req: Request, res: Response) => {
+    const { employeeId } = req.params; 
+    const { year } = req.body; 
+  
+    
+    const yearlyData = await accountService.getYearlyDebitCreditData(employeeId, year);
+  
+    
+    res.status(200).json({
+      success: true,
+      statusCode: 200,
+      message: "Yearly debit and credit data fetched successfully for bar chart",
+      data: yearlyData,
+    });
+  });
+
 export const accountController = {
   addAccountController,
   getAccountController,
   getTotalDebitCreditAndAmountForCurrentMonthController,
+  getYearlyDebitCreditDataController
 };
