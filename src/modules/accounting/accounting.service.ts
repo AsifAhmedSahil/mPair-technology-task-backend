@@ -63,51 +63,47 @@ const getTotalDebitCreditAndAmountForCurrentMonth = async (
 };
 
 const getYearlyDebitCreditData = async (employeeId: string, year: number) => {
-    const yearStart = moment(`${year}-01-01`).startOf('year').toDate(); 
-    const yearEnd = moment(`${year}-12-31`).endOf('year').toDate(); 
-  
-   
-    const accounts = await Account.find({
-      employeeId,
-      date: { $gte: yearStart, $lte: yearEnd }
-    }).exec();
+  const yearStart = moment(`${year}-01-01`).startOf("year").toDate();
+  const yearEnd = moment(`${year}-12-31`).endOf("year").toDate();
 
-    if (accounts.length === 0) {
-        return { message: "No data found for this year." };
-      }
-  
-    
-    const monthlyData: { [key: string]: { debitTotal: number, creditTotal: number } } = {};
-  
-    
-    accounts.forEach((account: IAccount) => {
-      const monthYear = moment(account.date).format("YYYY-MM"); 
-  
-      if (!monthlyData[monthYear]) {
-        monthlyData[monthYear] = { debitTotal: 0, creditTotal: 0 };
-      }
-  
-      
-      if (account.accountType === "debit") {
-        monthlyData[monthYear].debitTotal += account.amount;
-      } else if (account.accountType === "credit") {
-        monthlyData[monthYear].creditTotal += account.amount;
-      }
-    });
-  
-    
-    const result = Object.keys(monthlyData).map((monthYear) => ({
-      monthYear,
-      debitTotal: monthlyData[monthYear].debitTotal,
-      creditTotal: monthlyData[monthYear].creditTotal
-    }));
-  
-    return result;
-  };
+  const accounts = await Account.find({
+    employeeId,
+    date: { $gte: yearStart, $lte: yearEnd },
+  }).exec();
+
+  const monthlyData: {
+    [key: string]: { debitTotal: number; creditTotal: number };
+  } = {};
+
+  for (let month = 1; month <= 12; month++) {
+    const monthYear = moment(`${year}-${month < 10 ? "0" : ""}${month}`).format(
+      "YYYY-MM"
+    );
+    monthlyData[monthYear] = { debitTotal: 0, creditTotal: 0 };
+  }
+
+  accounts.forEach((account: IAccount) => {
+    const monthYear = moment(account.date).format("YYYY-MM");
+
+    if (account.accountType === "debit") {
+      monthlyData[monthYear].debitTotal += account.amount;
+    } else if (account.accountType === "credit") {
+      monthlyData[monthYear].creditTotal += account.amount;
+    }
+  });
+
+  const result = Object.keys(monthlyData).map((monthYear) => ({
+    monthYear,
+    debitTotal: monthlyData[monthYear].debitTotal,
+    creditTotal: monthlyData[monthYear].creditTotal,
+  }));
+
+  return result;
+};
 
 export const accountService = {
   createAccount,
   getAllAccountsForEmployee,
   getTotalDebitCreditAndAmountForCurrentMonth,
-  getYearlyDebitCreditData
+  getYearlyDebitCreditData,
 };

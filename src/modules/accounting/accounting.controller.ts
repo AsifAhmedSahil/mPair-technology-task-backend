@@ -61,25 +61,39 @@ const getTotalDebitCreditAndAmountForCurrentMonthController = catchAsync(
   }
 );
 
-const getYearlyDebitCreditDataController = catchAsync(async (req: Request, res: Response) => {
-    const { employeeId } = req.params; 
-    const { year } = req.body; 
-  
-    
-    const yearlyData = await accountService.getYearlyDebitCreditData(employeeId, year);
-  
-    
+const getYearlyDebitCreditDataController = catchAsync(
+  async (req: Request, res: Response) => {
+    const { employeeId } = req.params;
+    const { year } = req.body;
+
+    const yearlyData = await accountService.getYearlyDebitCreditData(
+      employeeId,
+      year
+    );
+
+    if (
+      yearlyData.length === 0 ||
+      (yearlyData[0].debitTotal === 0 && yearlyData[0].creditTotal === 0)
+    ) {
+      return res.status(404).json({
+        success: false,
+        statusCode: 404,
+        message: "No data found for this year.",
+      });
+    }
+
     res.status(200).json({
       success: true,
       statusCode: 200,
-      message: "Yearly debit and credit data fetched successfully for bar chart",
+      message: "Yearly debit and credit data fetched successfully",
       data: yearlyData,
     });
-  });
+  }
+);
 
 export const accountController = {
   addAccountController,
   getAccountController,
   getTotalDebitCreditAndAmountForCurrentMonthController,
-  getYearlyDebitCreditDataController
+  getYearlyDebitCreditDataController,
 };
