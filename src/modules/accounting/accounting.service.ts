@@ -1,5 +1,5 @@
 import moment from "moment";
-import { AccountHead } from "../account-head/accountHead.model";
+
 import { IAccount } from "./accounting.interface";
 import { Account } from "./accounting.model";
 
@@ -10,10 +10,7 @@ const createAccount = async (
   amount: number,
   employeeId: string
 ): Promise<IAccount> => {
-  const accountHead = await AccountHead.findById(accountHeadId);
-  if (!accountHead) {
-    throw new Error("Account Head not found");
-  }
+
 
   const account = new Account({
     date,
@@ -26,13 +23,26 @@ const createAccount = async (
   return await account.save();
 };
 
+
 const getAllAccountsForEmployee = async (
-  employeeId: string
+  employeeId: string,
+  date: Date 
 ): Promise<IAccount[]> => {
-  return await Account.find({ employeeId })
-    .populate("accountHead", "name status")
+  
+  const startOfDay = new Date(date);
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const endOfDay = new Date(startOfDay);
+  endOfDay.setHours(23, 59, 59, 999);
+
+  return await Account.find({
+    employeeId,
+    date: { $gte: startOfDay, $lt: endOfDay }, 
+  })
+    .populate("accountHead", "name status") 
     .exec();
 };
+
 
 const getTotalDebitCreditAndAmountForCurrentMonth = async (
   employeeId: string
@@ -66,6 +76,7 @@ const getYearlyDebitCreditData = async (employeeId: string, year: number) => {
   const yearStart = moment(`${year}-01-01`).startOf("year").toDate();
   const yearEnd = moment(`${year}-12-31`).endOf("year").toDate();
 
+  
   const accounts = await Account.find({
     employeeId,
     date: { $gte: yearStart, $lte: yearEnd },
@@ -75,6 +86,7 @@ const getYearlyDebitCreditData = async (employeeId: string, year: number) => {
     [key: string]: { debitTotal: number; creditTotal: number };
   } = {};
 
+  
   for (let month = 1; month <= 12; month++) {
     const monthYear = moment(`${year}-${month < 10 ? "0" : ""}${month}`).format(
       "YYYY-MM"
@@ -82,6 +94,7 @@ const getYearlyDebitCreditData = async (employeeId: string, year: number) => {
     monthlyData[monthYear] = { debitTotal: 0, creditTotal: 0 };
   }
 
+  
   accounts.forEach((account: IAccount) => {
     const monthYear = moment(account.date).format("YYYY-MM");
 
@@ -92,6 +105,7 @@ const getYearlyDebitCreditData = async (employeeId: string, year: number) => {
     }
   });
 
+  
   const result = Object.keys(monthlyData).map((monthYear) => ({
     monthYear,
     debitTotal: monthlyData[monthYear].debitTotal,
@@ -100,6 +114,7 @@ const getYearlyDebitCreditData = async (employeeId: string, year: number) => {
 
   return result;
 };
+
 
 export const accountService = {
   createAccount,

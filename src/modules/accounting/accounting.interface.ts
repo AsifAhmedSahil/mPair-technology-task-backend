@@ -1,9 +1,9 @@
-import { Types } from "mongoose";
+
 
 export interface IAccount {
     date: Date;
     accountType: 'debit' | 'credit'; 
-    accountHead: Types.ObjectId
+    accountHead: string
     amount: number; 
     employeeId: string;
   }

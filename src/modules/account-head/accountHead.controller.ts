@@ -3,22 +3,22 @@ import catchAsync from "../../utils/catchAsync";
 import { accountHeadService } from "./accountHead.service";
 
 
-// Controller to handle the creation of AccountHead
-const createAccountHeadController = catchAsync(async (req: Request, res: Response) => {
-  const { name, status } = req.body;
 
-  // Validate that the name and status are provided
-  if (!name || !status) {
+const createAccountHeadController = catchAsync(async (req: Request, res: Response) => {
+  const { headName, accountType } = req.body;
+
+ 
+  if (!headName || !accountType) {
     return res.status(400).json({
       success: false,
       message: "Both name and status are required.",
     });
   }
 
-  // Call the service to create the AccountHead
-  const result = await accountHeadService.createAccountHead(name, status);
+  
+  const result = await accountHeadService.createAccountHead(headName, accountType);
 
-  // Return a success response
+  
   res.status(201).json({
     success: true,
     statusCode: 201,

@@ -31,16 +31,45 @@ const addAccountController = catchAsync(async (req: Request, res: Response) => {
 
 const getAccountController = catchAsync(async (req: Request, res: Response) => {
   const { employeeId } = req.params;
+  
+ 
+  let { date } = req.query;
 
-  const accounts = await accountService.getAllAccountsForEmployee(employeeId);
+  if (!date) {
+    return res.status(400).json({
+      success: false,
+      message: "Date query parameter is required.",
+    });
+  }
 
+  
+  if (Array.isArray(date)) {
+    date = date[0]; 
+  }
+  const dateString = typeof date === 'string' ? date : '';
+  
+  const parsedDate = new Date(dateString);
+
+  
+  if (isNaN(parsedDate.getTime())) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid date format provided.",
+    });
+  }
+
+  
+  const accounts = await accountService.getAllAccountsForEmployee(employeeId, parsedDate);
+
+  
   res.status(200).json({
     success: true,
     statusCode: 200,
-    message: "Fetched all accounts successfully",
+    message: "Fetched all accounts successfully for the specific date",
     data: accounts,
   });
 });
+
 
 const getTotalDebitCreditAndAmountForCurrentMonthController = catchAsync(
   async (req: Request, res: Response) => {
@@ -64,11 +93,31 @@ const getTotalDebitCreditAndAmountForCurrentMonthController = catchAsync(
 const getYearlyDebitCreditDataController = catchAsync(
   async (req: Request, res: Response) => {
     const { employeeId } = req.params;
-    const { year } = req.body;
+    const { year } = req.query; 
+
+    if (!year) {
+      return res.status(400).json({
+        success: false,
+        statusCode: 400,
+        message: "Year is required",
+      });
+    }
+
+
+    const yearNumber = parseInt(year as string, 10);
+
+    
+    if (isNaN(yearNumber)) {
+      return res.status(400).json({
+        success: false,
+        statusCode: 400,
+        message: "Invalid year provided",
+      });
+    }
 
     const yearlyData = await accountService.getYearlyDebitCreditData(
       employeeId,
-      year
+      yearNumber
     );
 
     if (
@@ -90,6 +139,7 @@ const getYearlyDebitCreditDataController = catchAsync(
     });
   }
 );
+
 
 export const accountController = {
   addAccountController,

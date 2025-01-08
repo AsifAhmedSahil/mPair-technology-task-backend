@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 import { IAccount } from "./accounting.interface";
 
 
-// Define the Account schema
+
 const accountSchema = new Schema<IAccount>({
   date: {
     type: Date,
@@ -14,8 +14,7 @@ const accountSchema = new Schema<IAccount>({
     required: true,
   },
   accountHead: {
-    type: Schema.Types.ObjectId,
-    ref: 'AccountHead', 
+    type: String,
     required: true,
   },
   amount: {

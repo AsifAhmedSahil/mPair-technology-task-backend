@@ -1,4 +1,4 @@
 export interface IAccountHead {
-    name: string;   
-    status: 'debit' | 'credit';  
+    headName: string;   
+    accountType: 'debit' | 'credit';  
 }
